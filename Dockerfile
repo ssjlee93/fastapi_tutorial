@@ -54,4 +54,4 @@ ENV PATH="/app/.venv/bin:$PATH"
 
 # Run main.py
 # Uses `uv run` to sync dependencies on startup, respecting UV_NO_DEV
-CMD ["uv", "run", "main.py"]
+CMD ["uv", "run", "fastapi", "dev", "main.py"]
