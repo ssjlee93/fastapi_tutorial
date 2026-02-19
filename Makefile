@@ -2,7 +2,7 @@
 
 # Run the app locally (uv + Python)
 local:
-	uv run main.py
+	uv run fastapi dev main.py
 
 # Setup the database locally
 setup-db:
