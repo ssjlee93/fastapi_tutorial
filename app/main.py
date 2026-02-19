@@ -1,13 +1,32 @@
-from fastapi import FastAPI
-from enum import Enum
-
-class ModelName(str, Enum):
-    alexnet = "alexnet"
-    resnet = "resnet"
-    lenet = "lenet"
+from fastapi import Depends, FastAPI
+from app.enums.enums import ModelName
+from app.db.db import create_db_and_tables
+from app.config.config import Settings
+from functools import lru_cache
+from typing import Annotated
 
 
 app = FastAPI()
+
+
+# settings related
+@lru_cache
+def get_settings():
+    return Settings()
+
+
+@app.get("/info")
+async def info(settings: Annotated[Settings, Depends(get_settings)]):
+    return {
+        "app_name": settings.PROJECT_NAME,
+        "database_url": settings.DATABASE_URL,
+    }
+
+
+# db related
+@app.on_event("startup")
+def on_startup():
+    create_db_and_tables()
 
 
 @app.get("/")
