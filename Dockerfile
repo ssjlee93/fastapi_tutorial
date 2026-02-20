@@ -52,6 +52,8 @@ ENV PATH="/app/.venv/bin:$PATH"
 # Use the non-root user to run our application
 #USER nonroot
 
+EXPOSE 8000
+
 # Run main.py
 # Uses `uv run` to sync dependencies on startup, respecting UV_NO_DEV
-CMD ["uv", "run", "fastapi", "dev", "main.py"]
+CMD ["uv", "run", "fastapi", "dev", "app/main.py"]

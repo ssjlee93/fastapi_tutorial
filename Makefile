@@ -2,6 +2,7 @@
 
 # Run the app locally (uv + Python)
 local:
+	make pg
 	uv run fastapi dev app/main.py
 
 # Setup the database locally
