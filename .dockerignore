@@ -1,0 +1,47 @@
+# Version Control
+.git
+.gitignore
+.gitattributes
+
+# Environments and dependencies
+.venv
+venv
+ENV
+env
+
+# Python cache and bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.cache/
+
+# IDE and Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Docker files
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Build and distributions
+build/
+dist/
+*.egg-info/
+
+# Logs
+*.log
+
+# Local environment variables
+.env
+.envrc
+
+# Documentation and others
+README.md
+LICENSE
+Makefile

@@ -15,4 +15,10 @@ docker:
 
 # Run an instance of postgres on docker
 pg:
-	docker run --name pg -p 5432:5432 -e POSTGRES_PASSWORD=password -e POSTGRES_DB=fastapi -d postgres
+	@if docker ps -a --format '{{.Names}}' | grep -q '^pg$$'; then \
+		echo "Container 'pg' already exists, starting it..."; \
+		docker start pg; \
+	else \
+		echo "Creating new 'pg' container..."; \
+		docker run --name pg -p 5432:5432 -e POSTGRES_PASSWORD=password -e POSTGRES_DB=fastapi -d postgres; \
+	fi

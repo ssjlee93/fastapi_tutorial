@@ -1,10 +1,14 @@
+from contextlib import asynccontextmanager
+
 from fastapi import Depends, FastAPI
-from app.enums.enums import ModelName
 from app.db.db import create_db_and_tables
 from app.config.config import Settings
 from functools import lru_cache
 from typing import Annotated
 
+from app.internal.enums.enums import ModelName
+from app.internal.models.items import Item
+from app.routes.path import router
 
 app = FastAPI()
 
@@ -24,21 +28,18 @@ async def info(settings: Annotated[Settings, Depends(get_settings)]):
 
 
 # db related
-@app.on_event("startup")
-def on_startup():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     create_db_and_tables()
+    yield
 
 
+# router
+app.include_router(router)
 # 1. first steps
 @app.get("/")
 async def root():
     return {"message": "Sexy World"}
-
-
-# 2. Path Parameters
-@app.get("/items/{item_id}")
-async def read_item(item_id: int):
-    return {"item_id": item_id}
 
 
 ## order first checks for this path,
@@ -126,12 +127,44 @@ async def read_user_item(item_id: str, needy: str):
 
 
 ## mixed
-@app.get("/items/{item_id}")
+@app.get("/items/{item_id}/mixed")
 async def read_user_item(
     item_id: str, needy: str, skip: int = 0, limit: int | None = None
 ):
     item = {"item_id": item_id, "needy": needy, "skip": skip, "limit": limit}
     return item
+
+
+# 4. Request Body
+@app.post("/items/rb")
+async def create_item(item: Item):
+    return item
+
+
+## use a model
+@app.post("/items/uam")
+async def create_item(item: Item):
+    item_dict = item.model_dump()
+    if item.tax is not None:
+        price_with_tax = item.price + item.tax
+        item_dict.update({"price_with_tax": price_with_tax})
+    return item_dict
+
+
+## request body and path parameters
+@app.put("/items/{item_id}")
+async def update_item(item_id: int, item: Item):
+    return {"item_id": item_id, **item.model_dump()}
+
+
+## request body + path parameters + query parameters
+@app.put("/items/{item_id}")
+async def update_item(item_id: int, item: Item, q: str | None = None):
+    result = {"item_id": item_id, **item.model_dump()}
+    if q:
+        result.update({"q": q})
+    return result
+
 
 def main():
     print("Hello from fastapi-tutorial!")
